@@ -3,6 +3,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/app/utils/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { get } from "http";
 import { BlogPostCard } from "@/components/general/BlogPostCard";
 import { redirect } from "next/navigation";
 
@@ -23,9 +24,13 @@ export default async function DashboardRoute(){
   const {getUser} = getKindeServerSession()
   const user = await getUser()
   
+  // Handle case where user is not authenticated
   if (!user || !user.id) {
     redirect('/api/auth/login')
   }
+
+  // Fetch data after the user check
+  const data = await getData(user.id)
 
     return(
         <>
