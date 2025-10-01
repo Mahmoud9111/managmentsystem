@@ -3,8 +3,8 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/app/utils/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { get } from "http";
 import { BlogPostCard } from "@/components/general/BlogPostCard";
+import { redirect } from "next/navigation";
 
 async function getData(userId: string){
   const data = await prisma.blogPost.findMany({
@@ -23,7 +23,9 @@ export default async function DashboardRoute(){
   const {getUser} = getKindeServerSession()
   const user = await getUser()
   
-  const data = await getData(user?.id)
+  if (!user || !user.id) {
+    redirect('/api/auth/login')
+  }
 
     return(
         <>
